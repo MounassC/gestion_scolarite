@@ -14,8 +14,8 @@ class ClasseController extends Controller
      */
     public function index()
     {
-        // On utilise eager loading (with) pour la performance
-        $classes = Classe::with(['filiere', 'niveau'])->get();
+        // On utilise "with" pour charger les relations et éviter les erreurs
+        $classes = Classe::with(['filiere', 'niveau', 'tarifActif'])->get();
         return view('classes.index', compact('classes'));
     }
 

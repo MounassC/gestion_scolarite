@@ -23,6 +23,15 @@ class Classe extends Model
 
     public function tarifs()
     {
-        return $this->hasMany(Tarifs::class);
+        return $this->belongsToMany(Tarif::class, 'tarif_classes', 'classe_id', 'tarif_id')
+            ->withPivot('is_active')
+            ->withTimestamps();
+    }
+
+    public function tarifActif()
+    {
+        return $this->belongsToMany(Tarif::class, 'tarif_classes', 'classe_id', 'tarif_id') // Ajoute les clés ici aussi
+            ->wherePivot('is_active', true)
+            ->withPivot('is_active');
     }
 }

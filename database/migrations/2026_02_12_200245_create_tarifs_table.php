@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->decimal('inscription', 10, 2);
             $table->decimal('mensualite', 10, 2);
-            $table->foreignId('classe_id')->constrained('classes')->onDelete('cascade');
             $table->timestamps();
         });
     }
