@@ -29,3 +29,7 @@ Route::resource('categories', CategorieNiveauxController::class);
 Route::resource('niveaux', NiveauxController::class);
 
 Route::resource('annees', AnneeAcademiqueController::class);
+Route::patch('/annees/{annee}/publier', [AnneeAcademiqueController::class, 'publier'])->name('annees.publier');
+Route::patch('/annees/{annee}/ouvrir-inscriptions', [AnneeAcademiqueController::class, 'ouvrirInscriptions'])->name('annees.ouvrir-inscriptions');
+Route::patch('/annees/{annee}/fermer-inscriptions', [AnneeAcademiqueController::class, 'fermerInscriptions'])->name('annees.fermer-inscriptions');
+Route::patch('/annees/{annee}/cloturer', [AnneeAcademiqueController::class, 'cloturer'])->name('annees.cloturer');

@@ -28,7 +28,7 @@ class CategorieNiveauxController extends Controller
         CategorieNiveaux::create($request->all());
         
         // Correction : assure-toi que le nom de la route est correct (pluriel ou singulier)
-        return redirect()->route('categorie_niveaux.index')->with('success', 'Catégorie créée');
+        return redirect()->route('categories.index')->with('success', 'Catégorie créée');
     }
 
     // Dans Laravel, par défaut, le paramètre sera 'categorie_niveau' (au singulier)

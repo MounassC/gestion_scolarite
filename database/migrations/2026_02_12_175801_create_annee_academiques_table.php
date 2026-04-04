@@ -13,7 +13,24 @@ return new class extends Migration
     {
         Schema::create('annee_academiques', function (Blueprint $table) {
             $table->id();
-            $table->string('anneeAc')->unique();
+            $table->string('code')->unique(); // Ex: 2025-2026
+
+            // Les dates
+            $table->date('dateOuverture');
+            $table->date('dateFermeture');
+            $table->date('dateDebutInscription');
+            $table->date('dateFinInscription');
+
+            // Le Statut avec une valeur par défaut "brouillon"
+            // On utilise 'enum' pour limiter les choix possibles dans la base
+            $table->enum('statut', [
+                'brouillon',
+                'publie',
+                'ouvertureInscription',
+                'fermetureInscription',
+                'cloture'
+            ])->default('brouillon');
+
             $table->timestamps();
         });
     }

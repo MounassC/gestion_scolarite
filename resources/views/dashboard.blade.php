@@ -4,8 +4,9 @@
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold text-dark">Tableau de Bord</h2>
-        <span class="badge bg-white text-primary shadow-sm p-2">
-            <i class="fas fa-calendar-day me-1"></i> Session {{ date('Y') }}-{{ date('Y')+1 }}
+       <span class="badge bg-white text-primary shadow-sm p-2">
+            <i class="fas fa-calendar-check me-1"></i> 
+            Session {{ $anneeActive->code ?? 'Non définie' }}
         </span>
     </div>
 
