@@ -11,7 +11,6 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Inscription</th>
                     <th>Mensualité</th>
                     <th>Actions</th>
@@ -20,7 +19,6 @@
             <tbody>
                 @foreach($tarifs as $tarif)
                 <tr>
-                    <td>#{{ $tarif->id }}</td>
                     <td>{{ number_format($tarif->inscription, 0, ',', ' ') }} FCFA</td>
                     <td>{{ number_format($tarif->mensualite, 0, ',', ' ') }} FCFA</td>
                     <td>

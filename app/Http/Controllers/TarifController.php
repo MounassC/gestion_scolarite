@@ -33,8 +33,13 @@ class TarifController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'inscription' => 'required|numeric',
-            'mensualite' => 'required|numeric',
+            'inscription' => 'required|numeric|min:0',
+            'mensualite' => 'required|numeric|min:0',
+        ], [
+            'inscription.min' => 'Le montant de l\'inscription ne peut pas être négatif.',
+            'mensualite.min' => 'La mensualité ne peut pas être négative.',
+            'inscription.numeric' => 'Veuillez saisir un nombre valide.',
+            'mensualite.numeric' => 'Veuillez saisir un nombre valide.',
         ]);
 
         Tarif::create($request->all());
@@ -63,7 +68,7 @@ class TarifController extends Controller
         DB::transaction(function () use ($request) {
             // 1. Désactiver tous les anciens tarifs de cette classe précise
             TarifClasse::where('classe_id', $request->classe_id)
-                        ->update(['is_active' => false]);
+                ->update(['is_active' => false]);
 
             // 2. Créer la nouvelle liaison active
             TarifClasse::create([
@@ -90,7 +95,7 @@ class TarifController extends Controller
     public function edit(Tarif $tarifs)
     {
         $classes = Classe::all();
-        return view('tarifs.edit', compact('tarif', 'classes'));
+        return view('tarifs.edit', compact('tarifs', 'classes'));
     }
 
     /**
@@ -100,7 +105,12 @@ class TarifController extends Controller
     {
         $request->validate([
             'inscription' => 'required|numeric|min:0',
-            'mensualite'  => 'required|numeric|min:0',
+            'mensualite' => 'required|numeric|min:0',
+        ], [
+            'inscription.min' => 'Le montant de l\'inscription ne peut pas être négatif.',
+            'mensualite.min' => 'La mensualité ne peut pas être négative.',
+            'inscription.numeric' => 'Veuillez saisir un nombre valide.',
+            'mensualite.numeric' => 'Veuillez saisir un nombre valide.',
         ]);
 
         $tarifs->update($request->all());

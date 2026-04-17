@@ -33,7 +33,7 @@
                     <th>Niveau</th>
                     {{-- Nouvelle colonne pour le tarif --}}
                     <th>Tarif Actuel (Insc. / Mens.)</th>
-                    <th width="200px">Actions</th>
+                    <th class="text-center" width="200px">Actions</th>
                 </tr>
             </thead>
             <tbody>
