@@ -4,11 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreAnneeAcademiqueRequest;
 use App\Models\AnneeAcademique;
+use App\Services\AnneeAcademiqueService;
 use Exception;
-
+use Illuminate\Support\Facades\DB;
 
 class AnneeAcademiqueController extends Controller
 {
+
+    protected $service;
+
+    public function __construct(AnneeAcademiqueService $service)
+    {
+        $this->service = $service;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -31,15 +40,12 @@ class AnneeAcademiqueController extends Controller
      */
     public function store(StoreAnneeAcademiqueRequest $request)
     {
-        // On utilise les données déjà validées par StoreAnneeAcademiqueRequest
-        $data = $request->validated();
-
-        // On s'assure que le statut est bien 'brouillon' à la création
-        $data['statut'] = 'brouillon';
-
-        AnneeAcademique::create($data);
-
-        return redirect()->route('annees.index')->with('success', 'Année académique ajoutée avec succès.');
+        try {
+            $this->service->store($request->validated());
+            return redirect()->route('annees.index')->with('success', 'Année créée avec succès.');
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->with('error', $e->getMessage());
+        }
     }
 
     /**
@@ -55,9 +61,9 @@ class AnneeAcademiqueController extends Controller
      */
     public function edit(AnneeAcademique $annee)
     {
-        // si c'est publié ou plus, on ne peut plus modifier
+        // La vérification peut rester ici pour l'affichage de la vue
         if ($annee->statut !== 'brouillon') {
-            return redirect()->route('annees.index')->with('error', 'Cette année ne peut plus être modifiée car elle est déjà publiée.');
+            return redirect()->route('annees.index')->with('error', 'Modification impossible : l\'année est déjà publiée.');
         }
         return view('annees.edit', compact('annee'));
     }
@@ -67,12 +73,12 @@ class AnneeAcademiqueController extends Controller
      */
     public function update(StoreAnneeAcademiqueRequest $request, AnneeAcademique $annee)
     {
-        if ($annee->statut !== 'brouillon') {
-            return redirect()->route('annees.index')->with('error', 'Modification impossible.');
+        try {
+            $this->service->update($annee, $request->validated());
+            return redirect()->route('annees.index')->with('success', 'Mise à jour réussie.');
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
-
-        $annee->update($request->validated());
-        return redirect()->route('annees.index')->with('success', 'Année mise à jour.');
     }
 
     /**
@@ -81,7 +87,7 @@ class AnneeAcademiqueController extends Controller
     public function publier(AnneeAcademique $annee)
     {
         try {
-            $annee->publier(); // On appelle la logique du modèle
+            $this->service->publier($annee);
             return redirect()->back()->with('success', 'Année publiée avec succès !');
         } catch (Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
@@ -94,7 +100,7 @@ class AnneeAcademiqueController extends Controller
     public function ouvrirInscriptions(AnneeAcademique $annee)
     {
         try {
-            $annee->ouvrirInscriptions(); // On appelle la logique du modèle
+            $this->service->ouvrirInscriptions($annee);
             return redirect()->back()->with('success', 'Inscriptions ouvertes !');
         } catch (Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
@@ -107,7 +113,7 @@ class AnneeAcademiqueController extends Controller
     public function fermerInscriptions(AnneeAcademique $annee)
     {
         try {
-            $annee->fermerInscriptions();
+            $this->service->fermerInscriptions($annee);
             return redirect()->back()->with('success', 'Inscriptions fermées avec succès !');
         } catch (Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
@@ -120,22 +126,22 @@ class AnneeAcademiqueController extends Controller
     public function cloturer(AnneeAcademique $annee)
     {
         try {
-            $annee->cloturer();
+            $this->service->cloturer($annee);
             return redirect()->back()->with('success', 'Année académique clôturée définitivement.');
         } catch (Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
-
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(AnneeAcademique $annee)
     {
-        if ($annee->statut !== 'brouillon') {
-            return redirect()->back()->with('error', 'Impossible de supprimer une année déjà publiée.');
+        try {
+            $this->service->destroy($annee);
+            return redirect()->route('annees.index')->with('success', 'Année supprimée.');
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
         }
-        $annee->delete();
-        return redirect()->route('annees.index')->with('success', 'Année supprimée.');
     }
 }

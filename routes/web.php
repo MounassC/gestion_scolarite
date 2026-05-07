@@ -17,6 +17,7 @@ Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
 Route::resource('filieres', FiliereController::class);
 
+
 Route::resource('classes', ClasseController::class);
 
 Route::resource('tarifs', TarifController::class);
@@ -24,7 +25,9 @@ Route::resource('tarifs', TarifController::class);
 Route::get('/rattacher-tarif', [TarifController::class, 'showRattacher'])->name('tarifs.rattacher.show');
 Route::post('/rattacher-tarif', [TarifController::class, 'storeRattacher'])->name('tarifs.rattacher.store');
 
-Route::resource('categories', CategorieNiveauxController::class);
+Route::resource('categories', CategorieNiveauxController::class)->parameters([
+    'categories' => 'categorie_niveau'
+]);
 
 Route::resource('niveaux', NiveauxController::class);
 

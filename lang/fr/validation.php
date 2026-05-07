@@ -13,9 +13,14 @@ return [
     
     'attributes' => [
         'code' => 'Code',
+        'code_classe' => 'Code de la Classe',
         'nomFiliere' => 'Nom de la Filière',
         'nom_classe' => 'Nom de la Classe',
         'inscription' => 'Montant Inscription',
         'mensualite' => 'Mensualité',
+        'filiere_id' => 'Filière',
+        'niveau_id' => 'Niveau',
+        'dateOuverture' => 'Date d\'ouverture',
+        'dateFermeture' => 'Date de fermeture',
     ],
 ];

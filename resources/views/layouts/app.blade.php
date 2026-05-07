@@ -122,6 +122,22 @@
         </div>
     @endif
 
+    @if ($errors->any())
+    <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+        <div class="d-flex">
+            <i class="fas fa-ban me-3 mt-1 fs-5"></i>
+            <div>
+                <ul class="mb-0 mt-1">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
 
 
     @yield('content')

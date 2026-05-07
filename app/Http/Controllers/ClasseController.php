@@ -2,13 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreClasseRequest;
+use App\Http\Requests\UpdateClasseRequest;
 use App\Models\Classe;
 use App\Models\Filiere;
 use App\Models\Niveau;
+use App\Services\ClasseService;
+use Exception;
 use Illuminate\Http\Request;
 
 class ClasseController extends Controller
 {
+
+    protected $classeService;
+
+    // On injecte le service ici
+    public function __construct(ClasseService $classeService)
+    {
+        $this->classeService = $classeService;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -33,18 +46,15 @@ class ClasseController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreClasseRequest $request)
     {
-        $request->validate([
-            'nom_classe'  => 'required|string|max:255',
-            'code_classe' => 'required|unique:classes,code_classe',
-            'filiere_id'  => 'required|exists:filieres,id',
-            'niveau_id'   => 'required|exists:niveaux,id',
-        ]);
-
-        Classe::create($request->all());
-
-        return redirect()->route('classes.index')->with('success', 'Classe créée avec succès');
+        try {
+            $this->classeService->store($request->validated());
+            return redirect()->route('classes.index')->with('success', 'Classe créée avec succès');
+        } catch (Exception $e) {
+            // En cas d'erreur métier (doublon, code existant), on revient au formulaire
+            return redirect()->back()->withInput()->with('error', $e->getMessage());
+        }
     }
 
     /**
@@ -68,26 +78,28 @@ class ClasseController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Classe $class)
+    public function update(UpdateClasseRequest $request, Classe $class)
     {
-        $request->validate([
-            'nom_classe'  => 'required|string|max:255',
-            'code_classe' => 'required|unique:classes,code_classe,' . $class->id,
-            'filiere_id'  => 'required|exists:filieres,id',
-            'niveau_id'   => 'required|exists:niveaux,id',
-        ]);
-
-        $class->update($request->all());
-
-        return redirect()->route('classes.index')->with('success', 'Classe mise à jour');
+        try {
+            $this->classeService->update($class, $request->validated());
+            return redirect()->route('classes.index')->with('success', 'Classe mise à jour');
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->with('error', $e->getMessage());
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Classe $classe)
+    public function destroy(Classe $class)
     {
-        $classe->delete();
-        return redirect()->route('classes.index')->with('success', 'Classe supprimée');
+        try {
+            $this->classeService->destroy($class);
+            return redirect()->route('classes.index')->with('success', 'La classe a été supprimée avec succès.');
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
+
+
 }

@@ -2,11 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreFiliereRequest;
+use App\Http\Requests\UpdateFiliereRequest;
 use App\Models\Filiere;
+use App\Services\FiliereService;
 use Illuminate\Http\Request;
 
 class FiliereController extends Controller
 {
+
+    protected $filiereService;
+
+    public function __construct(FiliereService $filiereService)
+    {
+        $this->filiereService = $filiereService;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -27,18 +38,9 @@ class FiliereController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreFiliereRequest $request)
     {
-        $request->validate([
-            'code' => 'required|unique:filieres,code',
-            'nomFiliere' => 'required|unique:filieres,nomFiliere'
-        ]);
-
-        Filiere::create([
-            'code' => $request->code,
-            'nomFiliere' => $request->nomFiliere,
-        ]);
-
+        $this->filiereService->store($request->validated());
         return redirect()->route('filieres.index')->with('success', 'Filière ajoutée avec succès');
     }
 
@@ -61,15 +63,9 @@ class FiliereController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Filiere $filiere)
+    public function update(UpdateFiliereRequest $request, Filiere $filiere)
     {
-        $request->validate([
-            'code' => 'required|unique:filieres,code,' . $filiere->id,
-            'nomFiliere' => 'required|unique:filieres,nomFiliere,' . $filiere->id
-        ]);
-
-        $filiere->update($request->all());
-
+        $this->filiereService->update($filiere, $request->validated());
         return redirect()->route('filieres.index')->with('success', 'Filière modifiée');
     }
 
@@ -78,8 +74,11 @@ class FiliereController extends Controller
      */
     public function destroy(Filiere $filiere)
     {
-        $filiere->delete();
-
-        return redirect()->route('filieres.index')->with('success', 'Filière supprimée');
+        try {
+            $this->filiereService->destroy($filiere);
+            return redirect()->route('filieres.index')->with('success', 'Filière supprimée avec succès');
+        } catch (\Exception $e) {
+            return redirect()->route('filieres.index')->with('error', $e->getMessage());
+        }
     }
 }

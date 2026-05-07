@@ -2,12 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreNiveauRequest;
+use App\Http\Requests\UpdateNiveauRequest;
 use App\Models\CategorieNiveaux;
 use App\Models\Niveau;
+use App\Services\NiveauService;
 use Illuminate\Http\Request;
 
 class NiveauxController extends Controller
 {
+    protected $niveauService;
+
+    public function __construct(NiveauService $niveauService)
+    {
+        $this->niveauService = $niveauService;
+    }
+
+
     /**
      * Display a listing of the resource.
      */
@@ -29,17 +40,10 @@ class NiveauxController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreNiveauRequest $request)
     {
-        $request->validate([
-        'nom_niveaux' => 'required',
-        // Vérifie bien que le nom de la table est 'categorie_niveaux'
-        'categorie_niveau_id' => 'required|exists:categorie_niveaux,id' 
-    ]);
-
-    Niveau::create($request->all());
-
-    return redirect()->route('niveaux.index')->with('success', 'Niveau créé !');
+        $this->niveauService->store($request->validated());
+        return redirect()->route('niveaux.index')->with('success', 'Niveau créé avec succès !');
     }
 
     /**
@@ -62,16 +66,18 @@ class NiveauxController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Niveau $niveau)
+    public function update(UpdateNiveauRequest $request, Niveau $niveau)
     {
-        $request->validate([
-            'nom_niveaux' => 'required|string|max:255',
-            'categorie_niveau_id' => 'required|exists:categorie_niveaux,id'
-        ]);
+        try {
+            // On essaie de mettre à jour via le service
+            $this->niveauService->update($niveau, $request->validated());
 
-        $niveau->update($request->all());
-
-        return redirect()->route('niveaux.index')->with('success', 'Niveau mis à jour');
+            return redirect()->route('niveaux.index')->with('success', 'Niveau mis à jour !');
+        } catch (\Exception $e) {
+            // Si le service lance une Exception (comme sur ton image), 
+            // on l'attrape ici et on redirige vers la page précédente avec le message
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 
     /**
@@ -79,7 +85,11 @@ class NiveauxController extends Controller
      */
     public function destroy(Niveau $niveau)
     {
-        $niveau->delete();
-        return redirect()->route('niveaux.index')->with('success', 'Niveau supprimé');
+        try {
+            $this->niveauService->destroy($niveau);
+            return redirect()->route('niveaux.index')->with('success', 'Niveau supprimé avec succès');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 }

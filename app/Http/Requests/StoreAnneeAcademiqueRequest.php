@@ -22,20 +22,12 @@ class StoreAnneeAcademiqueRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'code' => 'required|string|unique:annee_academiques,code',
-
-            // L'école doit ouvrir avant de fermer
+            'code' => 'required|string|unique:annee_academiques,code,' . ($this->annee->id ?? ''),
             'dateOuverture' => 'required|date',
             'dateFermeture' => 'required|date|after:dateOuverture',
 
-            // Début inscription AVANT fin inscription
-            'dateDebutInscription' => 'required|date|before:dateFinInscription',
-            'dateFinInscription' => 'required|date',
-
-            // Contrainte prof : L'ouverture des inscriptions doit être AVANT l'ouverture de l'école
-            'dateDebutInscription' => 'required|date|before:dateOuverture',
-
-            // Contrainte prof : La fermeture des inscriptions doit être APRÈS l'ouverture de l'école
+            // Inscriptions : doivent commencer avant l'ouverture et finir après l'ouverture
+            'dateDebutInscription' => 'required|date|before:dateFinInscription|before:dateOuverture',
             'dateFinInscription' => 'required|date|after:dateOuverture',
         ];
     }
@@ -46,10 +38,10 @@ class StoreAnneeAcademiqueRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'dateDebutInscription.before' => "La date de début d'inscription doit être antérieure à la date de fin.",
-            'dateDebutInscription.before' => "Les inscriptions doivent commencer avant l'ouverture de l'école.",
-            'dateFinInscription.after' => "Les inscriptions doivent se terminer après l'ouverture de l'école.",
+            'code.unique' => "Ce code d'année académique existe déjà.",
             'dateFermeture.after' => "La date de fermeture doit être après la date d'ouverture.",
+            'dateDebutInscription.before' => "Les inscriptions doivent commencer avant l'ouverture de l'école.",
+            'dateFinInscription.after' => "Les inscriptions doivent se terminer après le début des cours.",
         ];
     }
 }

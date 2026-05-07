@@ -3,72 +3,50 @@
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow">
-                <div class="card-header bg-warning text-dark">
-                    <h5 class="mb-0">Modifier le Tarif : {{ $tarif->classe->nom_classe }}</h5>
+        <div class="col-md-6"> {{-- Réduit à 6 car moins de champs --}}
+            <div class="card shadow border-0">
+                <div class="card-header bg-warning text-dark py-3">
+                    <h5 class="mb-0"><i class="fas fa-edit me-2"></i>Modifier le Tarif du Catalogue</h5>
                 </div>
                 
-                <div class="card-body">
-                    {{-- Affichage des erreurs --}}
-                    @if ($errors->any())
-                        <div class="alert alert-danger">
-                            <ul class="mb-0">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-
+                <div class="card-body p-4">
                     <form action="{{ route('tarifs.update', $tarif->id) }}" method="POST">
                         @csrf
                         @method('PUT')
 
-                        {{-- Choix de la Classe --}}
                         <div class="mb-3">
-                            <label for="classe_id" class="form-label">Classe concernée</label>
-                            <select name="classe_id" id="classe_id" class="form-select @error('classe_id') is-invalid @enderror" required>
-                                @foreach($classes as $classe)
-                                    <option value="{{ $classe->id }}" 
-                                        {{ (old('classe_id', $tarif->classe_id) == $classe->id) ? 'selected' : '' }}>
-                                        {{ $classe->nom_classe }} ({{ $classe->filiere->nomFiliere ?? 'N/A' }})
-                                    </option>
-                                @endforeach
-                            </select>
+                            <label class="form-label fw-bold">Montant Inscription (FCFA)</label>
+                            <input type="number" 
+                                   name="inscription" 
+                                   class="form-control @error('inscription') is-invalid @enderror" 
+                                   value="{{ (int)old('inscription', $tarif->inscription) }}" 
+                                   required>
+                            @error('inscription')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
-                        <div class="row">
-                            {{-- Frais d'Inscription --}}
-                            <div class="col-md-6 mb-3">
-                                <label for="inscription" class="form-label">Frais d'Inscription</label>
-                                <div class="input-group">
-                                    <input type="number" name="inscription" id="inscription" 
-                                           class="form-control" 
-                                           value="{{ old('inscription', $tarif->inscription) }}" required>
-                                    <span class="input-group-text">CFA</span>
-                                </div>
-                            </div>
-
-                            {{-- Mensualité --}}
-                            <div class="col-md-6 mb-3">
-                                <label for="mensualite" class="form-label">Mensualité</label>
-                                <div class="input-group">
-                                    <input type="number" name="mensualite" id="mensualite" 
-                                           class="form-control" 
-                                           value="{{ old('mensualite', $tarif->mensualite) }}" required>
-                                    <span class="input-group-text">CFA</span>
-                                </div>
-                            </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Mensualité (FCFA)</label>
+                            <input type="number" 
+                                   name="mensualite" 
+                                   class="form-control @error('mensualite') is-invalid @enderror" 
+                                   value="{{ (int)old('mensualite', $tarif->mensualite) }}" 
+                                   required>
+                            @error('mensualite')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
-                        <div class="mt-4 pt-3 border-top">
+                        <div class="alert alert-info border-0 shadow-sm">
+                            <small><i class="fas fa-info-circle me-1"></i> La modification impactera les classes qui utiliseront ce tarif à l'avenir.</small>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
                             <button type="submit" class="btn btn-primary">
-                                Mettre à jour le Tarif
+                                <i class="fas fa-sync-alt me-1"></i> Mettre à jour le tarif
                             </button>
-                            <a href="{{ route('tarifs.index') }}" class="btn btn-secondary">
-                                Annuler
-                            </a>
+                            <a href="{{ route('tarifs.index') }}" class="btn btn-light border">Annuler</a>
                         </div>
                     </form>
                 </div>
