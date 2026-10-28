@@ -1,57 +1,75 @@
-# Gestion Scolarite
+# Gestion Scolarité
 
 [![Laravel CI](https://github.com/MounassC/gestion_scolarite/actions/workflows/laravel-tests.yml/badge.svg)](https://github.com/MounassC/gestion_scolarite/actions/workflows/laravel-tests.yml)
 
-## À propos du projet
-Ce projet est un système de gestion de scolarité développé avec Laravel blade.
+Application web de gestion de la scolarité d'un établissement : années académiques, filières, niveaux, classes et tarifs. Développée avec Laravel et Blade.
 
-## About Laravel
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Fonctionnalités
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Années académiques** : création avec contrôle des dates (durée de 9 mois), puis gestion du cycle de vie : brouillon, publication, ouverture et fermeture des inscriptions, clôture
+- **Filières**, **catégories de niveaux**, **niveaux** et **classes** : création, modification, consultation, suppression
+- **Tarifs** : frais d'inscription et mensualité, rattachés aux classes
+- **Tableau de bord** de synthèse
+- Interface en français
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Technologies
 
-## Learning Laravel
+- PHP 8.2+ et Laravel 12
+- Blade (vues), Tailwind CSS 4 et Vite
+- SQLite par défaut (configurable dans `.env`)
+- PHPUnit pour les tests
+- GitHub Actions pour l'intégration continue
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Architecture
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- `app/Http/Controllers` : contrôleurs qui reçoivent les requêtes
+- `app/Http/Requests` : validation des formulaires (Form Requests)
+- `app/Services` : logique métier, séparée des contrôleurs
+- `app/Models` : modèles Eloquent et relations
+- `database/migrations` : structure de la base de données
+- `resources/views` : vues Blade
+- `tests` : tests unitaires et tests de fonctionnalités
 
-## Laravel Sponsors
+## Installation
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Prérequis : PHP 8.2 ou plus, Composer, Node.js et npm.
 
-### Premium Partners
+```bash
+git clone https://github.com/MounassC/gestion_scolarite.git
+cd gestion_scolarite
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
 
-## Contributing
+npm install
+npm run dev
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Dans un second terminal, lancez le serveur :
 
-## Code of Conduct
+```bash
+php artisan serve
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+L'application est alors disponible sur `http://localhost:8000`.
 
-## Security Vulnerabilities
+Sous Windows (PowerShell), remplacez `cp .env.example .env` par `copy .env.example .env`. Si `php artisan migrate` propose de créer le fichier de base SQLite, répondez oui.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Tests
 
-## License
+```bash
+php artisan test
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Les tests couvrent notamment la création des années académiques et la validation de leurs dates. Ils sont aussi exécutés automatiquement à chaque envoi de code grâce à GitHub Actions.
+
+## Auteure
+
+Maïmouna Cissé, diplômée en génie logiciel de l'Université Dakar Bourguiba.
+
+## Licence
+
+Projet développé dans un cadre pédagogique, sur la base du framework [Laravel](https://laravel.com), distribué sous [licence MIT](https://opensource.org/licenses/MIT).
